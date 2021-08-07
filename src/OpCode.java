@@ -22,6 +22,47 @@ public class OpCode {
         _second =  new PByte(opcode & 0xFF);
     }
 
+    /*
+    * opcodes that include address are: {1NNN, 2NNN, ANNN, BNNN}
+    * if the opcode does not include address -1 will be returned
+    * */
+    public final int getAddressValue(){
+        if(_first.getFirstQuadbit() == 0x01 || _first.getFirstQuadbit() == 0x02 ||
+                _first.getFirstQuadbit() == 0x0a || _first.getFirstQuadbit() == 0x0b){
+            return ((_first.intValue() << 8) | _second.intValue()) & 0xfff;
+        }
+        return -1;
+    }
+
+    /*
+     * opcodes that include at least one register are:
+     * {3NNN, 4NNN, 5NNN, 6NNN, 7NNN, 8NNN, 9NNN, CNNN, DNNN, ENNN, FNNN}
+     * if the opcode does not include registers -1 will be returned
+     * */
+    public final int getFirstRegister(){
+        if(_first.getFirstQuadbit() == 0x03 || _first.getFirstQuadbit() == 0x04 ||
+                _first.getFirstQuadbit() == 0x05 || _first.getFirstQuadbit() == 0x06 ||
+                _first.getFirstQuadbit() == 0x07 || _first.getFirstQuadbit() == 0x08 ||
+                _first.getFirstQuadbit() == 0x09 || _first.getFirstQuadbit() == 0x0c ||
+                _first.getFirstQuadbit() == 0x0d || _first.getFirstQuadbit() == 0x0e ||
+                _first.getFirstQuadbit() == 0x0f ){
+            return _first.getSecondQuadbit();
+        }
+        return -1;
+    }
+
+    /*
+     * opcodes that include two registers are: {5NNN, 8NNN, 9NNN, DNNN}
+     * if the opcode does not include second register -1 will be returned
+     * */
+    public final int getSecondRegister(){
+        if(_first.getFirstQuadbit() == 0x05 || _first.getFirstQuadbit() == 0x08 ||
+                _first.getFirstQuadbit() == 0x09 || _first.getFirstQuadbit() == 0x0d){
+            return _second.getFirstQuadbit();
+        }
+        return -1;
+    }
+
     public final int getFirstByteValue(){
         return _first.intValue();
     }
@@ -34,6 +75,12 @@ public class OpCode {
         return _second;
     }
 
+    public final int getSecondByteValue(){
+        return _second.intValue();
+    }
 
-
+    @Override
+    public String toString() {
+        return Integer.toHexString((_first.intValue() << 8) | _second.intValue()).toUpperCase();
+    }
 }

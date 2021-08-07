@@ -32,7 +32,7 @@ public class PByte extends Number implements Comparable<PByte> {
 
     @Override
     public String toString(){
-        return Integer.toHexString(_value);
+        return "0x" + Integer.toHexString(_value).toUpperCase();
     }
 
     @Override

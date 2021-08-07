@@ -1,13 +1,29 @@
 public class Disassembler {
 
-    public void decodeOpcode(OpCode opcode) {
-        String output = "";
+    public String decodeOpcode(OpCode opcode) {
+        String output = "DISASSEMBLER ERROR";
         switch(opcode.getFirstByte().getFirstQuadbit()){
-            case 0x00: output += "0 not handled yet"; break;
-            case 0x01: output += "1 not handled yet"; break;
-            case 0x02: output += "2 not handled yet"; break;
-            case 0x03: output += "3 not handled yet"; break;
-            case 0x04: output += "4 not handled yet"; break;
+            case 0x00:
+                if(opcode.getSecondByteValue() == 0xee){
+                    output = "RET";
+                } else if (opcode.getSecondByteValue() == 0xe0){
+                    output = "CLS";
+                }
+                break;
+            case 0x01:
+                output = "JMP " + Integer.toHexString(opcode.getAddressValue()).toUpperCase();
+                break;
+            case 0x02:
+                output = "CALL " + Integer.toHexString(opcode.getAddressValue()).toUpperCase();
+                break;
+            case 0x03:
+                output = "SKPEQ V" + Integer.toHexString(opcode.getFirstRegister()).toUpperCase()
+                        + " " + opcode.getSecondByte();
+                break;
+            case 0x04:
+                output = "SKPNE V"+ Integer.toHexString(opcode.getFirstRegister()).toUpperCase()
+                        + " " + opcode.getSecondByte();
+                break;
             case 0x05: output += "5 not handled yet"; break;
             case 0x06: output += "6 not handled yet"; break;
             case 0x07: output += "7 not handled yet"; break;
@@ -20,11 +36,13 @@ public class Disassembler {
             case 0x0e: output += "e not handled yet"; break;
             case 0x0f: output += "f not handled yet"; break;
         }
+        //test print!
         System.out.println(output);
+        return output;
     }
 
-    public void decodeOpcode(int opcode){
-        decodeOpcode(new OpCode(opcode));
+    public String decodeOpcode(int opcode){
+        return decodeOpcode(new OpCode(opcode));
     }
 
 }
