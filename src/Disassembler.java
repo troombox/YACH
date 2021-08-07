@@ -1,9 +1,8 @@
 public class Disassembler {
 
     public void decodeOpcode(OpCode opcode) {
-        int firstQuadbit = opcode.getFirstByte() >> 4;
         String output = "";
-        switch(firstQuadbit){
+        switch(opcode.getFirstByte().getFirstQuadbit()){
             case 0x00: output += "0 not handled yet"; break;
             case 0x01: output += "1 not handled yet"; break;
             case 0x02: output += "2 not handled yet"; break;
@@ -27,6 +26,5 @@ public class Disassembler {
     public void decodeOpcode(int opcode){
         decodeOpcode(new OpCode(opcode));
     }
-
 
 }
