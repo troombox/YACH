@@ -34,6 +34,11 @@ public class OpCode {
         return -1;
     }
 
+    public final String getAddressHexString(){
+        int address = getAddressValue();
+        return (address >= 0) ? "0x" + Integer.toHexString(address).toUpperCase() : "OpCode does not include address";
+    }
+
     /*
      * opcodes that include at least one register are:
      * {3NNN, 4NNN, 5NNN, 6NNN, 7NNN, 8NNN, 9NNN, CNNN, DNNN, ENNN, FNNN}
@@ -51,6 +56,11 @@ public class OpCode {
         return -1;
     }
 
+    public final String getFirstRegisterHexString(){
+        int reg = getFirstRegister();
+        return (reg >= 0) ? Integer.toHexString(reg).toUpperCase() : "OpCode does not include first register";
+    }
+
     /*
      * opcodes that include two registers are: {5NNN, 8NNN, 9NNN, DNNN}
      * if the opcode does not include second register -1 will be returned
@@ -63,6 +73,12 @@ public class OpCode {
         return -1;
     }
 
+    public final String getSecondRegisterHexString(){
+        int reg = getSecondRegister();
+        return (reg >= 0) ? Integer.toHexString(reg).toUpperCase() : "OpCode does not include second register";
+    }
+
+
     public final int getFirstByteValue(){
         return _first.intValue();
     }
@@ -71,9 +87,7 @@ public class OpCode {
         return _first;
     }
 
-    public final PByte getSecondByte(){
-        return _second;
-    }
+    public final PByte getSecondByte(){ return _second; }
 
     public final int getSecondByteValue(){
         return _second.intValue();
