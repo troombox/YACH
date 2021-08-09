@@ -1,4 +1,6 @@
+import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class Memory {
@@ -111,9 +113,21 @@ public class Memory {
 
     public void dumpMemoryToFile(String path){
         try {
-            PrintWriter writer = new PrintWriter(path, "UTF-8");
-            Arrays.stream(_memory).filter(e -> e.wasModified()).forEach(e -> writer.println(e));
+            PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
+            Arrays.stream(_memory).filter(Membyte::wasModified).forEach(writer::println);
             writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMemoryFromFile(String filename, int start_pc){
+        try{
+            FileInputStream in = new FileInputStream(filename);
+            int read;
+            while((read = in.read()) != -1){
+                writeMemoryAtAddress(start_pc++, new PByte(read));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
