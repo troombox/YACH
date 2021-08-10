@@ -28,13 +28,15 @@ public class Memory {
         }
     }
 
-    private static final int MAX_MEMORY_SIZE = 4096;
-    private static final int MEMORY_START_POINT = 0x200; //should be 512 / 0x200. TODO: set the custom memory size
-    private static final int STACK_START_POINT = 0xea0; // 96 bytes, up to 0xEFF
+    public static final int MAX_MEMORY_SIZE = 4096;
+    public static final int MEMORY_START_POINT = 0x200; //should be 512 / 0x200. TODO: set the custom memory size
+    private static final int STACK_START_POINT = 0xfa0; // 96 bytes, up to 0xEFF
     private static final int DISPLAY_START_POINT = 0xf00; //256 bytes, up to 0xFFF
 
     private Membyte[] _memory;
     private int _memorySize;
+    private int _lastWrittenAddress;
+    private int _stackAddress;
 
     public Memory(){
         _memory = new Membyte[MAX_MEMORY_SIZE];
@@ -42,6 +44,7 @@ public class Memory {
             _memory[i] = new Membyte(i);
         }
         _memorySize = MAX_MEMORY_SIZE;
+        _stackAddress = STACK_START_POINT;
         loadCharSetAtAddress(0);
     }
 
@@ -55,6 +58,7 @@ public class Memory {
         for(int i = 0; i < _memorySize; i++){
             _memory[i] = new Membyte(i);
         }
+        _stackAddress = STACK_START_POINT;
         loadCharSetAtAddress(0);
     }
 
@@ -105,10 +109,36 @@ public class Memory {
             throw new Exception("MEMORY access error");
         }
         _memory[address].setMemValue(data);
+        _lastWrittenAddress = address;
+    }
+
+    public void pushToStack(PByte data) throws Exception{
+        if(_stackAddress == 0xeff){
+            throw new Exception("STACK full error");
+        }
+        try{
+            writeMemoryAtAddress(_stackAddress, data);
+            _stackAddress++;
+        } catch (Exception e){
+            throw new Exception("STACK access error");
+        }
+    }
+
+    public PByte popFromStack() throws Exception{
+        PByte value;
+        try{
+            value = readMemoryAtAddress(_stackAddress);
+        } catch (Exception e){
+            throw new Exception("Stack access error");
+        }
+        if(_stackAddress > STACK_START_POINT){
+            _stackAddress--;
+        }
+        return value;
     }
 
     public void dumpMemoryToOut(){
-        Arrays.stream(_memory).filter(e -> e.wasModified()).forEach(e -> System.out.println(e));
+        Arrays.stream(_memory).filter(Membyte::wasModified).forEach(System.out::println);
     }
 
     public void dumpMemoryToFile(String path){
