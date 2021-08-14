@@ -1,6 +1,8 @@
+import java.util.stream.IntStream;
+
 public class DReg {
 
-    private static final int DATA_REG_COUNT = 16;
+    public static final int DATA_REG_COUNT = 16;
 
     private PByte[] _dataReg;
     private int _iReg;
@@ -9,6 +11,7 @@ public class DReg {
 
     public DReg(){
         _dataReg = new PByte[DATA_REG_COUNT];
+        IntStream.range(0,DATA_REG_COUNT).forEach(i -> _dataReg[i] = new PByte(0));
         _iReg = 0;
         _pcReg = 0;
         _spReg = 0;
@@ -47,4 +50,9 @@ public class DReg {
     }
 
     public int readSPReg(){ return _spReg; }
+
+    public void writeFlagReg(PByte value) { _dataReg[15] = value; }
+
+    public PByte readFlagReg(){ return _dataReg[15]; }
+
 }
