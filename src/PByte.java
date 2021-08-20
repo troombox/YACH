@@ -2,6 +2,7 @@ public class PByte extends Number implements Comparable<PByte> {
 
     public static final int MAX_VALUE = 0xff;
     public static final int MIN_VALUE = 0x0;
+    public static final int BITS = 0x8;
     int _value;
 
     public PByte(int value) throws NumberFormatException{

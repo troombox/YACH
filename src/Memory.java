@@ -29,6 +29,7 @@ public class Memory {
     }
 
     public static final int MAX_MEMORY_SIZE = 4096;
+    public static final int CHAR_SPRITE_START_POINT = 0x0;
     public static final int MEMORY_START_POINT = 0x200; //should be 512 / 0x200. TODO: set the custom memory size
     private static final int STACK_START_POINT = 0xfa0; // 96 bytes, up to 0xEFF
     private static final int DISPLAY_START_POINT = 0xf00; //256 bytes, up to 0xFFF
@@ -45,7 +46,7 @@ public class Memory {
         }
         _memorySize = MAX_MEMORY_SIZE;
         _stackAddress = STACK_START_POINT;
-        loadCharSetAtAddress(0);
+        loadCharSetAtAddress(CHAR_SPRITE_START_POINT);
     }
 
     public Memory(int customMemSize){
@@ -59,7 +60,7 @@ public class Memory {
             _memory[i] = new Membyte(i);
         }
         _stackAddress = STACK_START_POINT;
-        loadCharSetAtAddress(0);
+        loadCharSetAtAddress(CHAR_SPRITE_START_POINT);
     }
 
     private void loadCharSetAtAddress(int address){
@@ -88,6 +89,9 @@ public class Memory {
 
     public void clearMemory(){
         _memory = new Membyte[_memorySize];
+        for(int i = 0; i < MAX_MEMORY_SIZE; i++){
+            _memory[i] = new Membyte(i);
+        }
         loadCharSetAtAddress(0);
     }
 
@@ -113,26 +117,25 @@ public class Memory {
     }
 
     public void pushToStack(PByte data) throws Exception{
-        if(_stackAddress == 0xeff){
+        if(_stackAddress == Memory.MAX_MEMORY_SIZE){
             throw new Exception("STACK full error");
         }
         try{
-            writeMemoryAtAddress(_stackAddress, data);
-            _stackAddress++;
+            writeMemoryAtAddress(_stackAddress++, data);
         } catch (Exception e){
             throw new Exception("STACK access error");
         }
     }
 
     public PByte popFromStack() throws Exception{
+        if(_stackAddress == STACK_START_POINT){
+            throw new Exception("STACK empty error");
+        }
         PByte value;
         try{
-            value = readMemoryAtAddress(_stackAddress);
+            value = readMemoryAtAddress(--_stackAddress);
         } catch (Exception e){
             throw new Exception("Stack access error");
-        }
-        if(_stackAddress > STACK_START_POINT){
-            _stackAddress--;
         }
         return value;
     }
