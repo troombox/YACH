@@ -13,6 +13,19 @@ public class OpCodeTest {
         Assertions.assertEquals("ABCD",o.toString());
         o = new OpCode(0xabcd);
         Assertions.assertEquals("ABCD",o.toString());
+        try{
+            o = new OpCode(-1);
+        } catch (Exception e){
+            Assertions.assertEquals("java.lang.NumberFormatException: Value out of range. Value:\"-1\"", e.toString());
+        }
+    }
+
+    @Test
+    public void TestIntValue(){
+        OpCode o = new OpCode(0xabcd);
+        Assertions.assertEquals(0xabcd, o.intValue());
+        o = new OpCode(0x0);
+        Assertions.assertEquals(0, o.intValue());
     }
 
     @Test

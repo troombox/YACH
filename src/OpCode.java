@@ -93,6 +93,10 @@ public class OpCode {
         return _second.intValue();
     }
 
+    public int intValue(){
+        return (_first.intValue() << 8) | _second.intValue();
+    }
+
     @Override
     public String toString() {
         return Integer.toHexString((_first.intValue() << 8) | _second.intValue()).toUpperCase();

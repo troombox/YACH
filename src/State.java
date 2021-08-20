@@ -1,23 +1,26 @@
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 public class State {
 
     private OpCode _currentOp;
+    private ErrorMsg _emsgs;
+
     private DReg _registers;
     private Memory _memory;
     private Display _display;
     private Timers _timers;
     private Keys _keys;
+
     private Map<Integer,Runnable> _opFunc;
     private Map<Integer,Runnable> _opFuncSec;
 
 
     public State(){
         _currentOp = new OpCode(0);
+        _emsgs = new ErrorMsg();
         _registers = new DReg();
         _memory = new Memory();
         _display = new Display();
@@ -28,8 +31,21 @@ public class State {
         populateFuncMap();
     }
 
+    public ErrorMsg get_emsgs() { return _emsgs; }
+
+    public DReg get_registers() { return _registers; }
+
+    public Memory get_memory() { return _memory; }
+
+    public Display get_display() { return _display; }
+
+    public Timers get_timers() { return _timers; }
+
+    public Keys get_keys() { return _keys; }
+
     private void populateFuncMap(){
-        /*adding primary opcode functions*/
+        /*  adding primary opcode functions */
+        /*  for primary map the key is first quadbit, e.g. 0xE0A1 -> 0xe */
         _opFunc.put(0x0, this::op0x0);
         _opFunc.put(0x1, this::op0x1);
         _opFunc.put(0x2, this::op0x2);
@@ -47,32 +63,44 @@ public class State {
         _opFunc.put(0xe, this::op0xe);
         _opFunc.put(0xf, this::op0xf);
 
-        /*adding secondary opcode functions*/
-        _opFuncSec.put(0xe0, this::op0x00e0);
-        _opFuncSec.put(0xee, this::op0x00ee);
-        _opFuncSec.put(0x00, this::op0x8000);
-        _opFuncSec.put(0x01, this::op0x8001);
-        _opFuncSec.put(0x02, this::op0x8002);
-        _opFuncSec.put(0x03, this::op0x8003);
-        _opFuncSec.put(0x04, this::op0x8004);
-        _opFuncSec.put(0x05, this::op0x8005);
-        _opFuncSec.put(0x06, this::op0x8006);
-        _opFuncSec.put(0x07, this::op0x8007);
-        _opFuncSec.put(0x0e, this::op0x800e);
-        _opFuncSec.put(0x9e, this::op0xe09e);
-        _opFuncSec.put(0xa1, this::op0xe0a1);
-        _opFuncSec.put(0xf007, this::op0xf007);
-        _opFuncSec.put(0x0a, this::op0xf00a);
-        _opFuncSec.put(0x15, this::op0xf015);
-        _opFuncSec.put(0x18, this::op0xf018);
-        _opFuncSec.put(0x1e, this::op0xf01e);
-        _opFuncSec.put(0x29, this::op0xf029);
-        _opFuncSec.put(0x33, this::op0xf033);
-        _opFuncSec.put(0x55, this::op0xf055);
-        _opFuncSec.put(0x65, this::op0xf065);
+        /*  adding secondary opcode functions   */
+        /*
+            the "key" is composed from "first quadbit" + "second byte"
+            e.g. opcode 0x8XY1 -> 0x8001 -> 0x8 + 0x01 -> 0x801
+         */
+        _opFuncSec.put(0x0e0, this::op0x00e0);
+        _opFuncSec.put(0x0ee, this::op0x00ee);
+        _opFuncSec.put(0x800, this::op0x8000);
+        _opFuncSec.put(0x801, this::op0x8001);
+        _opFuncSec.put(0x802, this::op0x8002);
+        _opFuncSec.put(0x803, this::op0x8003);
+        _opFuncSec.put(0x804, this::op0x8004);
+        _opFuncSec.put(0x805, this::op0x8005);
+        _opFuncSec.put(0x806, this::op0x8006);
+        _opFuncSec.put(0x807, this::op0x8007);
+        _opFuncSec.put(0x80e, this::op0x800e);
+        _opFuncSec.put(0xe9e, this::op0xe09e);
+        _opFuncSec.put(0xea1, this::op0xe0a1);
+        _opFuncSec.put(0xf07, this::op0xf007);
+        _opFuncSec.put(0xf0a, this::op0xf00a);
+        _opFuncSec.put(0xf15, this::op0xf015);
+        _opFuncSec.put(0xf18, this::op0xf018);
+        _opFuncSec.put(0xf1e, this::op0xf01e);
+        _opFuncSec.put(0xf29, this::op0xf029);
+        _opFuncSec.put(0xf33, this::op0xf033);
+        _opFuncSec.put(0xf55, this::op0xf055);
+        _opFuncSec.put(0xf65, this::op0xf065);
     }
 
-    private void fetchOPCode(){
+    public void forceSetCurrentOPCode(OpCode opcode){
+        _currentOp = opcode;
+    }
+
+    public final OpCode getCurrentOPCode(){
+        return _currentOp;
+    }
+
+    public void fetchOPCode(){
         try{
             _currentOp = new OpCode(_memory.readMemoryAtAddress(_registers.readPCReg()),
                     _memory.readMemoryAtAddress(_registers.readPCReg() + 1));
@@ -81,14 +109,14 @@ public class State {
         }
     }
 
-    private void executeCurrentOpCode(){
+    public void executeCurrentOpCode(){
         _opFunc.getOrDefault(_currentOp.getFirstByte().getFirstQuadbit(), this::opNULL).run();
     }
 
     /*primary opcode functions*/
 
     private void op0x0(){
-        _opFuncSec.getOrDefault(_currentOp.getSecondByteValue(), this::opNULL).run();
+        _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
     private void op0x1(){
@@ -156,7 +184,7 @@ public class State {
     }
 
     private void op0x8(){
-        _opFunc.getOrDefault(_currentOp.getSecondByteValue(), this::opNULL).run();
+        _opFunc.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
     private void op0x9(){
@@ -214,15 +242,11 @@ public class State {
     }
 
     private void op0xe(){
-        _opFuncSec.getOrDefault(_currentOp.getSecondByteValue(), this::opNULL);
+        _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL);
     }
 
     private void op0xf(){
-        if(_currentOp.getSecondByteValue() == 0x07){
-            op0xf007();
-        }else{
-            _opFunc.getOrDefault(_currentOp.getSecondByteValue(), this::opNULL).run();
-        }
+        _opFunc.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
     /*secondary opcode functions*/
@@ -459,5 +483,11 @@ public class State {
 
     private void opNULL(){
        /*do nothing*/
+        _emsgs.addMsg("UNKNOWN INSTRUCTION");
     }
+
+    private int currentOpToSecMapKey(){
+        return _currentOp.getFirstByte().getFirstQuadbit()*256 + _currentOp.getSecondByteValue();
+    }
+
 }
