@@ -17,6 +17,8 @@ public class PByteTest {
         Assertions.assertEquals(0xab, b.intValue());
         b = PByte.safeConstructor(0xabc);
         Assertions.assertEquals(0xbc, b.intValue());
+        b = PByte.safeConstructor(0x1 + 0xff);
+        Assertions.assertEquals(0x0, b.intValue());
     }
 
     @Test

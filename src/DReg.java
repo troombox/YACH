@@ -8,6 +8,7 @@ public class DReg {
     private int _iReg;
     private int _pcReg;
     private int _spReg;
+    private boolean _pcModFlag;
 
     public DReg(){
         _dataReg = new PByte[DATA_REG_COUNT];
@@ -15,6 +16,7 @@ public class DReg {
         _iReg = 0;
         _pcReg = 0;
         _spReg = 0;
+        _pcModFlag = false;
     }
 
     public void writeDataReg(int register, PByte newValue) throws Exception{
@@ -41,13 +43,20 @@ public class DReg {
 
     public void writePCReg(int value){
         _pcReg = value;
+        _pcModFlag = true;
+    }
+
+    public void incrementPCReg(){
+        if(_pcModFlag){
+            _pcModFlag = false;
+            return;
+        }
+        _pcReg++;
     }
 
     public int readPCReg(){ return _pcReg; }
 
-    public void writeSPReg(int value){
-        _spReg = value;
-    }
+    public void writeSPReg(int value){ _spReg = value; }
 
     public int readSPReg(){ return _spReg; }
 

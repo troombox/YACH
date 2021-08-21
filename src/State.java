@@ -22,6 +22,7 @@ public class State {
         _currentOp = new OpCode(0);
         _emsgs = new ErrorMsg();
         _registers = new DReg();
+        _registers.writePCReg(Memory.MEMORY_START_POINT);
         _memory = new Memory();
         _display = new Display();
         _timers = new Timers();
@@ -111,6 +112,8 @@ public class State {
 
     public void executeCurrentOpCode(){
         _opFunc.getOrDefault(_currentOp.getFirstByte().getFirstQuadbit(), this::opNULL).run();
+        if(_emsgs.messageWaiting())
+            System.out.println(_emsgs.getMsg());
     }
 
     /*primary opcode functions*/
@@ -184,7 +187,7 @@ public class State {
     }
 
     private void op0x8(){
-        _opFunc.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
+        _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
     private void op0x9(){
@@ -246,7 +249,7 @@ public class State {
     }
 
     private void op0xf(){
-        _opFunc.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
+        _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
     /*secondary opcode functions*/
@@ -487,7 +490,10 @@ public class State {
     }
 
     private int currentOpToSecMapKey(){
-        return _currentOp.getFirstByte().getFirstQuadbit()*256 + _currentOp.getSecondByteValue();
+        int fqb = _currentOp.getFirstByte().getFirstQuadbit();
+        if(fqb == 0x0 || fqb == 0xe || fqb == 0xf)
+            return fqb*256 + _currentOp.getSecondByteValue();
+        return fqb*256 + _currentOp.getSecondByte().getSecondQuadbit();
     }
 
 }
