@@ -29,7 +29,7 @@ public class Display {
                         returnValue = true;
                     }
                 }else{
-                    setPixelOn((x+i), y);
+                    setPixelOn((x + i), y);
                 }
             }
         } catch (Exception e){
@@ -39,26 +39,26 @@ public class Display {
     }
 
     public boolean setPixelOn(int x, int y) {
-        if( x < 0 || x > DISPLAY_HEIGHT){
+        if( x < 0 || x > DISPLAY_WIDTH){
             throw new IllegalArgumentException();
         }
-        if(y < 0 || y > DISPLAY_WIDTH) {
+        if(y < 0 || y > DISPLAY_HEIGHT) {
             throw new IllegalArgumentException();
         }
-        boolean temp =  _display[x][y];
-        _display[x][y] = true;
+        boolean temp =  _display[y][x];
+        _display[y][x] = true;
         return temp;
     }
 
     public boolean setPixelOff(int x, int y) {
-        if( x < 0 || x > DISPLAY_HEIGHT){
+        if( x < 0 || x > DISPLAY_WIDTH){
             throw new IllegalArgumentException();
         }
-        if(y < 0 || y > DISPLAY_WIDTH) {
+        if(y < 0 || y > DISPLAY_HEIGHT) {
             throw new IllegalArgumentException();
         }
-        boolean temp =  _display[x][y];
-        _display[x][y] = false;
+        boolean temp =  _display[y][x];
+        _display[y][x] = false;
         return temp;
     }
 
