@@ -1,8 +1,6 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.Map;
-
 public class MemoryTest {
     @Test
     public void TestMemory(){
@@ -74,24 +72,14 @@ public class MemoryTest {
     public void TestPushToStack(){
         Memory m = new Memory();
         try{
-            //currently 0xfa0 is stack start point
-            Assertions.assertEquals(0,m.readMemoryAtAddress(0xfa0).intValue());
-            m.pushToStack(new PByte(0xff));
-            Assertions.assertEquals(0xff,m.readMemoryAtAddress(0xfa0).intValue());
-            m.pushToStack(new PByte(0xaa));
-            Assertions.assertEquals(0xaa,m.readMemoryAtAddress(0xfa1).intValue());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
             for(int i = 0; i < 94; i++){
-                m.pushToStack(new PByte(i));
+                m.pushToStack(i);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
         try{
-            m.pushToStack(new PByte(0));
+            m.pushToStack(0);
         }catch (Exception e){
             Assertions.assertEquals("java.lang.Exception: STACK full error",e.toString());
         }
@@ -105,14 +93,14 @@ public class MemoryTest {
         } catch (Exception e){
             Assertions.assertEquals("java.lang.Exception: STACK empty error",e.toString());
         }
-        try{
-            m.pushToStack(new PByte(0xaa));
-            Assertions.assertEquals(0xaa, m.popFromStack().intValue());
-            for(int i = 0; i < 20; i++){
-                m.pushToStack(new PByte(i));
+        try {
+            m.pushToStack(0xaa);
+            Assertions.assertEquals(0xaa, m.popFromStack());
+            for (int i = 0; i < 20; i++) {
+                m.pushToStack(i);
             }
-            for(int i = 0; i < 20; i++){
-               Assertions.assertEquals(19-i, m.popFromStack().intValue());
+            for (int i = 0; i < 20; i++) {
+                Assertions.assertEquals(19 - i, m.popFromStack());
             }
         } catch (Exception e){
            e.printStackTrace();
