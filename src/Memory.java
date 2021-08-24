@@ -1,7 +1,9 @@
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+
 
 public class Memory {
 
@@ -31,13 +33,14 @@ public class Memory {
     public static final int MAX_MEMORY_SIZE = 4096;
     public static final int CHAR_SPRITE_START_POINT = 0x0;
     public static final int MEMORY_START_POINT = 0x200; //should be 512 / 0x200. TODO: set the custom memory size
+    public static final int MAX_STACK_SIZE = 96;
     private static final int STACK_START_POINT = 0xfa0; // 96 bytes, up to 0xEFF
     private static final int DISPLAY_START_POINT = 0xf00; //256 bytes, up to 0xFFF
 
     private Membyte[] _memory;
     private int _memorySize;
     private int _lastWrittenAddress;
-    private int _stackAddress;
+    private ArrayList<Integer> _stackArray;
 
     public Memory(){
         _memory = new Membyte[MAX_MEMORY_SIZE];
@@ -45,21 +48,22 @@ public class Memory {
             _memory[i] = new Membyte(i);
         }
         _memorySize = MAX_MEMORY_SIZE;
-        _stackAddress = STACK_START_POINT;
+        _stackArray = new ArrayList<>();
         loadCharSetAtAddress(CHAR_SPRITE_START_POINT);
     }
 
-    public Memory(int customMemSize){
+    public Memory(int customMemSize) {
         _memorySize = customMemSize;
-        if(_memorySize < 0x200 || _memorySize > MAX_MEMORY_SIZE ){
+        if (_memorySize < 0x200 || _memorySize > MAX_MEMORY_SIZE) {
             _memorySize = MAX_MEMORY_SIZE;
             System.err.println("MEMORY set to MAX_MEMORY_SIZE");
         }
         _memory = new Membyte[_memorySize];
-        for(int i = 0; i < _memorySize; i++){
+        for (int i = 0; i < _memorySize; i++) {
             _memory[i] = new Membyte(i);
         }
-        _stackAddress = STACK_START_POINT;
+//        _stackAddress = STACK_START_POINT;
+        _stackArray = new ArrayList<>();
         loadCharSetAtAddress(CHAR_SPRITE_START_POINT);
     }
 
@@ -101,50 +105,38 @@ public class Memory {
 
     public PByte readMemoryAtAddress(int address) throws Exception {
         if ( address < 0 || address >= _memorySize ){
-            //System.err.println("MEMORY access error");
             throw new Exception("MEMORY access error");
         }
         return _memory[address].getMemValue();
     }
 
     public void writeMemoryAtAddress(int address, PByte data) throws Exception {
-        if ( address < 0 || address >= _memorySize ){
-            //System.err.println("MEMORY access error");
+        if (address < 0 || address >= _memorySize) {
             throw new Exception("MEMORY access error");
         }
         _memory[address].setMemValue(data);
         _lastWrittenAddress = address;
     }
 
-    public void pushToStack(PByte data) throws Exception{
-        if(_stackAddress == Memory.MAX_MEMORY_SIZE){
+    public void pushToStack(int data) throws Exception {
+        if (_stackArray.size() == MAX_STACK_SIZE) {
             throw new Exception("STACK full error");
         }
-        try{
-            writeMemoryAtAddress(_stackAddress++, data);
-        } catch (Exception e){
-            throw new Exception("STACK access error");
-        }
+        _stackArray.add(data);
     }
 
-    public PByte popFromStack() throws Exception{
-        if(_stackAddress == STACK_START_POINT){
+    public int popFromStack() throws Exception {
+        if (_stackArray.isEmpty()) {
             throw new Exception("STACK empty error");
         }
-        PByte value;
-        try{
-            value = readMemoryAtAddress(--_stackAddress);
-        } catch (Exception e){
-            throw new Exception("Stack access error");
-        }
-        return value;
+        return _stackArray.remove(_stackArray.size() - 1);
     }
 
-    public void dumpMemoryToOut(){
+    public void dumpMemoryToOut() {
         Arrays.stream(_memory).filter(Membyte::wasModified).forEach(System.out::println);
     }
 
-    public void dumpMemoryToFile(String path){
+    public void dumpMemoryToFile(String path) {
         try {
             PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
             Arrays.stream(_memory).filter(Membyte::wasModified).forEach(writer::println);
