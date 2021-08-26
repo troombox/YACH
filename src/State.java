@@ -32,21 +32,35 @@ public class State {
         populateFuncMap();
     }
 
-    public ErrorMsg get_emsgs() { return _emsgs; }
+    /*  helper getters, might be cleaned / reworked later */
+    public ErrorMsg get_emsgs() {
+        return _emsgs;
+    }
 
-    public DReg get_registers() { return _registers; }
+    public DReg get_registers() {
+        return _registers;
+    }
 
-    public Memory get_memory() { return _memory; }
+    public Memory get_memory() {
+        return _memory;
+    }
 
-    public Display get_display() { return _display; }
+    public Display get_display() {
+        return _display;
+    }
 
-    public Timers get_timers() { return _timers; }
+    public Timers get_timers() {
+        return _timers;
+    }
 
-    public Keys get_keys() { return _keys; }
+    public Keys get_keys() {
+        return _keys;
+    }
 
-    private void populateFuncMap(){
-        /*  adding primary opcode functions */
-        /*  for primary map the key is first quadbit, e.g. 0xE0A1 -> 0xe */
+
+    private void populateFuncMap() {
+        /*  adding primary opcode functions
+            for primary map the key is first quadbit, e.g. 0xE0A1 -> 0xe */
         _opFunc.put(0x0, this::op0x0);
         _opFunc.put(0x1, this::op0x1);
         _opFunc.put(0x2, this::op0x2);
@@ -64,11 +78,9 @@ public class State {
         _opFunc.put(0xe, this::op0xe);
         _opFunc.put(0xf, this::op0xf);
 
-        /*  adding secondary opcode functions   */
-        /*
+        /*  adding secondary opcode functions
             the "key" is composed from "first quadbit" + "second byte"
-            e.g. opcode 0x8XY1 -> 0x8001 -> 0x8 + 0x01 -> 0x801
-         */
+            e.g. opcode 0x8XY1 -> 0x8001 -> 0x8 + 0x01 -> 0x801   */
         _opFuncSec.put(0x0e0, this::op0x00e0);
         _opFuncSec.put(0x0ee, this::op0x00ee);
         _opFuncSec.put(0x800, this::op0x8000);
@@ -93,32 +105,40 @@ public class State {
         _opFuncSec.put(0xf65, this::op0xf065);
     }
 
-    public void forceSetCurrentOPCode(OpCode opcode){
+    public void forceSetCurrentOPCode(OpCode opcode) {
         _currentOp = opcode;
     }
 
-    public final OpCode getCurrentOPCode(){
+    public final OpCode getCurrentOPCode() {
         return _currentOp;
     }
 
-    public void fetchOPCode(){
-        try{
+    public void fetchOPCode() {
+        try {
             _currentOp = new OpCode(_memory.readMemoryAtAddress(_registers.readPCReg()),
                     _memory.readMemoryAtAddress(_registers.readPCReg() + 1));
-        } catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void executeCurrentOpCode(){
-        _opFunc.getOrDefault(_currentOp.getFirstByte().getFirstQuadbit(), this::opNULL).run();
-        if(_emsgs.messageWaiting())
+    public void step() {
+        _registers.incrementPCReg();
+    }
+
+    public void checkMessages() {
+        if (_emsgs.messageWaiting())
             System.out.println(_emsgs.getMsg());
+    }
+
+    public void executeCurrentOpCode() {
+        _opFunc.getOrDefault(_currentOp.getFirstByte().getFirstQuadbit(), this::opNULL).run();
     }
 
     /*primary opcode functions*/
 
-    private void op0x0(){
+    private void op0x0() {
         _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
@@ -128,7 +148,7 @@ public class State {
 
     private void op0x2(){
         try{
-            _memory.pushToStack(new PByte(_registers.readPCReg()));
+            _memory.pushToStack(_registers.readPCReg());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -196,28 +216,28 @@ public class State {
                     !=  _registers.readDataReg(_currentOp.getSecondRegister()).intValue()){
                 _registers.writePCReg(_registers.readPCReg() + 2);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void op0xa(){
+    private void op0xa() {
         _registers.writeIReg(_currentOp.getAddressValue());
     }
 
-    private void op0xb(){
-        try{
-            _registers.writePCReg(PByte.safeConstructor(_registers.readDataReg(0).intValue()
-                    + _currentOp.getAddressValue()).intValue());
-        }catch (Exception e){
+    private void op0xb() {
+        try {
+            _registers.writePCReg(_registers.readDataReg(0).intValue()
+                    + _currentOp.getAddressValue());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void op0xc(){
+    private void op0xc() {
         Random rand = new Random();
         int random = rand.nextInt(0x100); // [0, 0xff / 250]
-        try{
+        try {
             _registers.writeDataReg(_currentOp.getFirstRegister(),
                     PByte.safeConstructor(_registers.readDataReg(_currentOp.getFirstRegister()).intValue() & random));
         }catch (Exception e){
@@ -229,10 +249,10 @@ public class State {
         try{
             int x = _registers.readDataReg(_currentOp.getFirstRegister()).intValue();
             int y = _registers.readDataReg(_currentOp.getSecondRegister()).intValue();
-            int heightN = _registers.readDataReg(_currentOp.getSecondByte().getSecondQuadbit()).intValue();
+            int heightN = _currentOp.getSecondByte().getSecondQuadbit();
             boolean flip = false;
             for(int i = 0; i < heightN; i++){
-               flip = flip && _display.drawSprite(x, (y + i), _memory.readMemoryAtAddress(_registers.readIReg() + i));
+                flip = flip || _display.drawSprite(x, (y + i), _memory.readMemoryAtAddress(_registers.readIReg() + i));
             }
             if(flip){
                 _registers.writeFlagReg(new PByte(1));
@@ -245,7 +265,7 @@ public class State {
     }
 
     private void op0xe(){
-        _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL);
+        _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
     private void op0xf(){
@@ -260,7 +280,7 @@ public class State {
 
     private void op0x00ee(){
         try{
-            _registers.writePCReg(_memory.popFromStack().intValue());
+            _registers.writePCReg(_memory.popFromStack());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -363,13 +383,14 @@ public class State {
     }
 
     private void op0x800e(){
-        try{
+        try {
             int vx = _registers.readDataReg(_currentOp.getFirstRegister()).intValue();
-            _registers.writeFlagReg(new PByte(vx >> 8 ));
-            _registers.writeDataReg(_currentOp.getFirstRegister(), new PByte(vx << 1));
-        }catch (Exception e){
+            _registers.writeFlagReg(new PByte(vx >> 7));
+            _registers.writeDataReg(_currentOp.getFirstRegister(), PByte.safeConstructor(vx << 1));
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void op0xe09e(){
@@ -402,11 +423,11 @@ public class State {
 
     private void op0xf00a(){
             try{
-                //TODO: rework the busy-wait!
+                //TODO: rework the busy-wait
                 while(!_keys.getKeyFlag()){
                     Thread.sleep(16);
                 }
-                _registers.writeDataReg(_currentOp.getFirstRegister(),new PByte(_timers.getDelayTimer()));
+                _registers.writeDataReg(_currentOp.getFirstRegister(), new PByte(_keys.getLastKeyPressed()));
                 _keys.setKeyFlag(false);
             }catch(Exception e){
                 e.printStackTrace();
