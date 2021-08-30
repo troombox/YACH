@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
+
+<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" xmlns="http://javafx.com/javafx/16" fx:controller="emulator.Viewer">
+    <children>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.0" minWidth="40.0" prefWidth="40.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.0" minWidth="40.0" prefWidth="40.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V0" GridPane.halignment="CENTER"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V1" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="1"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V2" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="2"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V3" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="3"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V4" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="4"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V5" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="5"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V6" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="6"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V7" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="7"/>
+                <TextField fx:id="textV0" GridPane.columnIndex="1"/>
+                <TextField fx:id="textV1" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <TextField fx:id="textV2" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <TextField fx:id="textV3" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <TextField fx:id="textV5" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <TextField fx:id="textV4" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <TextField fx:id="textV6" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <TextField fx:id="textV7" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V8" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="V9" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="1"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="VA" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="VB" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="VC" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="VD" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="5"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="VE" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="6"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="VF" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="7"/>
+                <TextField fx:id="textV8" GridPane.columnIndex="4"/>
+                <TextField fx:id="textV9" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+                <TextField fx:id="textVA" GridPane.columnIndex="4" GridPane.rowIndex="2"/>
+                <TextField fx:id="textVB" GridPane.columnIndex="4" GridPane.rowIndex="3"/>
+                <TextField fx:id="textVC" GridPane.columnIndex="4" GridPane.rowIndex="4"/>
+                <TextField fx:id="textVD" GridPane.columnIndex="4" GridPane.rowIndex="5"/>
+                <TextField fx:id="textVE" GridPane.columnIndex="4" GridPane.rowIndex="6"/>
+                <TextField fx:id="textVF" GridPane.columnIndex="4" GridPane.rowIndex="7"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="PC" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="8"/>
+                <TextField fx:id="textPCr" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                <TextField fx:id="textIr" GridPane.columnIndex="4" GridPane.rowIndex="8"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="I" GridPane.columnIndex="3"
+                      GridPane.halignment="CENTER" GridPane.rowIndex="8"/>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+        </GridPane>
+        <GridPane layoutX="380.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="200.0" prefWidth="200.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current OP Code" GridPane.halignment="CENTER"/>
+                <TextField fx:id="textOpCode" maxWidth="100.0" minWidth="100.0" prefWidth="100.0"
+                           GridPane.halignment="CENTER" GridPane.rowIndex="1"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dissasembly" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="2"/>
+                <TextField fx:id="textOpCodeDs" maxWidth="200.0" minWidth="200.0" prefHeight="25.0" prefWidth="200.0"
+                           GridPane.rowIndex="3"/>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+        </GridPane>
+    </children>
+</Pane>
