@@ -1,3 +1,6 @@
+package chip;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -10,18 +13,24 @@ public class Memory {
         private final int _address;
         private boolean _modified;
         private PByte _value;
+
         public Membyte(int address){
             _value = new PByte(0);
             _address = address;
             _modified = false;
         }
+
         public void setMemValue(PByte value){
             _value = value;
             _modified = true;
         }
+
         public void setMemValue(int value){ setMemValue(new PByte(value)); }
+
         public PByte getMemValue(){ return _value; }
+
         public int getAddress(){ return _address; }
+
         public boolean wasModified(){ return _modified; }
 
         @Override
@@ -149,11 +158,23 @@ public class Memory {
         }
     }
 
-    public void loadMemoryFromFile(String filename, int start_pc){
-        try{
+    public void loadMemoryFromFile(String filename, int start_pc) {
+        try {
             FileInputStream in = new FileInputStream(filename);
             int read;
-            while((read = in.read()) != -1){
+            while ((read = in.read()) != -1) {
+                writeMemoryAtAddress(start_pc++, new PByte(read));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMemoryFromFile(File file, int start_pc) {
+        try {
+            FileInputStream in = new FileInputStream(file);
+            int read;
+            while ((read = in.read()) != -1) {
                 writeMemoryAtAddress(start_pc++, new PByte(read));
             }
         } catch (Exception e) {

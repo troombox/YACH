@@ -1,3 +1,6 @@
+package chip;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -17,7 +20,6 @@ public class State {
     private Map<Integer,Runnable> _opFunc;
     private Map<Integer,Runnable> _opFuncSec;
 
-
     public State(){
         _currentOp = new OpCode(0);
         _emsgs = new ErrorMsg();
@@ -31,32 +33,6 @@ public class State {
         _opFuncSec = new HashMap<>();
         populateFuncMap();
     }
-
-    /*  helper getters, might be cleaned / reworked later */
-    public ErrorMsg get_emsgs() {
-        return _emsgs;
-    }
-
-    public DReg get_registers() {
-        return _registers;
-    }
-
-    public Memory get_memory() {
-        return _memory;
-    }
-
-    public Display get_display() {
-        return _display;
-    }
-
-    public Timers get_timers() {
-        return _timers;
-    }
-
-    public Keys get_keys() {
-        return _keys;
-    }
-
 
     private void populateFuncMap() {
         /*  adding primary opcode functions
@@ -105,6 +81,34 @@ public class State {
         _opFuncSec.put(0xf65, this::op0xf065);
     }
 
+    /*  helper getters, might be cleaned / reworked later */
+    public ErrorMsg get_emsgs() {
+        return _emsgs;
+    }
+
+    public DReg get_registers() {
+        return _registers;
+    }
+
+    public Memory get_memory() {
+        return _memory;
+    }
+
+    public Display get_display() {
+        return _display;
+    }
+
+    public Timers get_timers() {
+        return _timers;
+    }
+
+    public Keys get_keys() {
+        return _keys;
+    }
+
+    /*----------------------------------------------------*/
+
+    /*  Utility State Functions */
     public void forceSetCurrentOPCode(OpCode opcode) {
         _currentOp = opcode;
     }
@@ -113,6 +117,9 @@ public class State {
         return _currentOp;
     }
 
+    /*--------------------------*/
+
+    /*Run Functions*/
     public void fetchOPCode() {
         try {
             _currentOp = new OpCode(_memory.readMemoryAtAddress(_registers.readPCReg()),
@@ -136,13 +143,35 @@ public class State {
         _opFunc.getOrDefault(_currentOp.getFirstByte().getFirstQuadbit(), this::opNULL).run();
     }
 
+    public void loadFileToMem(String filePath) {
+        _memory.loadMemoryFromFile(filePath, Memory.MEMORY_START_POINT);
+    }
+
+    public void loadFileToMem(File file) {
+        _memory.loadMemoryFromFile(file, Memory.MEMORY_START_POINT);
+    }
+
+    public final boolean displayGetDataAtCoord(int x, int y) {
+        return _display.getPixelState(x, y);
+    }
+
+    public boolean displayGetChangedFlag() {
+        return _display.getDisplayChangedFlag();
+    }
+
+    public void displayTurnOffChangedFlag() {
+        _display.setDisplayChangedFlag(false);
+    }
+
+    /*----------------------------*/
+
     /*primary opcode functions*/
 
     private void op0x0() {
         _opFuncSec.getOrDefault(currentOpToSecMapKey(), this::opNULL).run();
     }
 
-    private void op0x1(){
+    private void op0x1() {
         _registers.writePCReg(_currentOp.getAddressValue());
     }
 
@@ -259,6 +288,7 @@ public class State {
             } else {
                 _registers.writeFlagReg(new PByte(0));
             }
+            _display.setDisplayChangedFlag(true);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -276,6 +306,7 @@ public class State {
 
     private void op0x00e0(){
         _display.clearDisplay();
+        _display.setDisplayChangedFlag(true);
     }
 
     private void op0x00ee(){
@@ -328,7 +359,7 @@ public class State {
     private void op0x8004(){
         try{
             int sum = _registers.readDataReg(_currentOp.getFirstRegister()).intValue()
-             + _registers.readDataReg(_currentOp.getSecondRegister()).intValue();
+                    + _registers.readDataReg(_currentOp.getSecondRegister()).intValue();
             if ((sum > 0xff)) {
                 _registers.writeFlagReg(new PByte(1));
             } else {
@@ -422,16 +453,16 @@ public class State {
     }
 
     private void op0xf00a(){
-            try{
-                //TODO: rework the busy-wait
-                while(!_keys.getKeyFlag()){
-                    Thread.sleep(16);
-                }
-                _registers.writeDataReg(_currentOp.getFirstRegister(), new PByte(_keys.getLastKeyPressed()));
-                _keys.setKeyFlag(false);
-            }catch(Exception e){
-                e.printStackTrace();
+        try{
+            //TODO: rework the busy-wait
+            while(!_keys.getKeyFlag()){
+                Thread.sleep(16);
             }
+            _registers.writeDataReg(_currentOp.getFirstRegister(), new PByte(_keys.getLastKeyPressed()));
+            _keys.setKeyFlag(false);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void op0xf015(){
@@ -506,7 +537,7 @@ public class State {
     }
 
     private void opNULL(){
-       /*do nothing*/
+        /*do nothing*/
         _emsgs.addMsg("UNKNOWN INSTRUCTION");
     }
 

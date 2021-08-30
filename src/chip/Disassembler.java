@@ -1,12 +1,14 @@
+package chip;
+
 public class Disassembler {
 
     public String decodeOpcode(OpCode opcode) {
         String output = "DISASSEMBLER ERROR";
-        switch(opcode.getFirstByte().getFirstQuadbit()){
+        switch (opcode.getFirstByte().getFirstQuadbit()) {
             case 0x00:
-                if(opcode.getSecondByteValue() == 0xee){
+                if (opcode.getSecondByteValue() == 0xee) {
                     output = "RET";
-                } else if (opcode.getSecondByteValue() == 0xe0){
+                } else if (opcode.getSecondByteValue() == 0xe0) {
                     output = "CLS";
                 }
                 break;

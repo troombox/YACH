@@ -1,9 +1,11 @@
+package chip;
+
 public class OpCode {
     /*
-    * opcodes in chip8 are two bytes long and big-endian, we will mark "lower" byte as "first"
-    * and mark "higher" byte as "second"
-    * due to Java not having unsigned bytes and limiting byte value to 127 we going to use our custom PByte class
-    * */
+     * opcodes in chip8 are two bytes long and big-endian, we will mark "lower" byte as "first"
+     * and mark "higher" byte as "second"
+     * due to Java not having unsigned bytes and limiting byte value to 127 we going to use our custom Chip.PByte class
+     * */
     private final PByte _first;
     private final PByte _second;
 
@@ -23,9 +25,9 @@ public class OpCode {
     }
 
     /*
-    * opcodes that include address are: {1NNN, 2NNN, ANNN, BNNN}
-    * if the opcode does not include address -1 will be returned
-    * */
+     * opcodes that include address are: {1NNN, 2NNN, ANNN, BNNN}
+     * if the opcode does not include address -1 will be returned
+     * */
     public final int getAddressValue(){
         if(_first.getFirstQuadbit() == 0x01 || _first.getFirstQuadbit() == 0x02 ||
                 _first.getFirstQuadbit() == 0x0a || _first.getFirstQuadbit() == 0x0b){
@@ -36,7 +38,7 @@ public class OpCode {
 
     public final String getAddressHexString(){
         int address = getAddressValue();
-        return (address >= 0) ? "0x" + Integer.toHexString(address).toUpperCase() : "OpCode does not include address";
+        return (address >= 0) ? "0x" + Integer.toHexString(address).toUpperCase() : "Chip.OpCode does not include address";
     }
 
     /*
@@ -58,7 +60,7 @@ public class OpCode {
 
     public final String getFirstRegisterHexString(){
         int reg = getFirstRegister();
-        return (reg >= 0) ? Integer.toHexString(reg).toUpperCase() : "OpCode does not include first register";
+        return (reg >= 0) ? Integer.toHexString(reg).toUpperCase() : "Chip.OpCode does not include first register";
     }
 
     /*
@@ -75,7 +77,7 @@ public class OpCode {
 
     public final String getSecondRegisterHexString(){
         int reg = getSecondRegister();
-        return (reg >= 0) ? Integer.toHexString(reg).toUpperCase() : "OpCode does not include second register";
+        return (reg >= 0) ? Integer.toHexString(reg).toUpperCase() : "Chip.OpCode does not include second register";
     }
 
 

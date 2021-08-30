@@ -1,9 +1,11 @@
+package chip;
+
 import java.util.ArrayList;
 
 public class ErrorMsg {
     private ArrayList<String> _messages;
 
-    public ErrorMsg(){
+    public ErrorMsg() {
         _messages = new ArrayList<>();
     }
 

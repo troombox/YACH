@@ -1,3 +1,5 @@
+package chip;
+
 import java.util.stream.IntStream;
 
 public class DReg {
@@ -51,7 +53,7 @@ public class DReg {
             _pcModFlag = false;
             return;
         }
-        _pcReg++;
+        _pcReg += 2;
     }
 
     public int readPCReg(){ return _pcReg; }

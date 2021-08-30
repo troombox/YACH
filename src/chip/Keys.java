@@ -1,3 +1,5 @@
+package chip;
+
 import java.util.stream.IntStream;
 
 public class Keys {
@@ -6,7 +8,7 @@ public class Keys {
     private boolean _keyFlag;
     private int _lastKey;
 
-    public Keys(){
+    public Keys() {
         _keys = new boolean[KEYS_NUM];
         IntStream.range(0x0,KEYS_NUM).forEach(i -> _keys[i] = false);
         _keyFlag = false;

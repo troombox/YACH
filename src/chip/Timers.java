@@ -1,8 +1,10 @@
+package chip;
+
 public class Timers {
     private int _delayTimer;
     private int _soundTimer;
 
-    public Timers(){
+    public Timers() {
         _delayTimer = 0;
         _soundTimer = 0;
     }

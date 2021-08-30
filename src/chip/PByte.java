@@ -1,3 +1,5 @@
+package chip;
+
 public class PByte extends Number implements Comparable<PByte> {
 
     public static final int MAX_VALUE = 0xff;
@@ -5,8 +7,8 @@ public class PByte extends Number implements Comparable<PByte> {
     public static final int BITS = 0x8;
     int _value;
 
-    public PByte(int value) throws NumberFormatException{
-        if(value >= MIN_VALUE && value <= MAX_VALUE ){
+    public PByte(int value) throws NumberFormatException {
+        if (value >= MIN_VALUE && value <= MAX_VALUE) {
             _value = value;
         }else{
             throw new NumberFormatException("Value out of range. Value:\"" + value + "\"");
@@ -52,7 +54,7 @@ public class PByte extends Number implements Comparable<PByte> {
 
     @Override
     public long longValue() {
-        return (long)_value;
+        return _value;
     }
 
     @Override
@@ -62,6 +64,6 @@ public class PByte extends Number implements Comparable<PByte> {
 
     @Override
     public double doubleValue() {
-        return (double)_value;
+        return _value;
     }
 }
