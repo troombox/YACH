@@ -1,3 +1,4 @@
+import chip.Keys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -19,7 +20,7 @@ public class KeysTest {
             e.printStackTrace();
         }
         try{
-           k.getKeyState(-1);
+            k.getKeyState(-1);
         } catch (Exception e){
             Assertions.assertEquals("java.lang.IllegalArgumentException: KEY not exists", e.toString());
         }

@@ -1,3 +1,5 @@
+import chip.DReg;
+import chip.PByte;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -9,7 +11,7 @@ public class DRegTest {
         DReg d = new DReg();
         IntStream.range(0,DReg.DATA_REG_COUNT).forEach(i -> {
             try{
-               Assertions.assertEquals(new PByte(0).intValue(),d.readDataReg(i).intValue());
+                Assertions.assertEquals(new PByte(0).intValue(), d.readDataReg(i).intValue());
             } catch (Exception e){
                 e.printStackTrace();
             }

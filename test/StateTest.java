@@ -1,5 +1,7 @@
+import chip.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
+import chip.*;
 
 public class StateTest {
     @Test
@@ -17,7 +19,7 @@ public class StateTest {
 
 //    @Test
 //    public void TestExecuteCurrentOpCode(){
-//        State s = new State();
+//        Chip.State s = new Chip.State();
 //        s.executeCurrentOpCode();
 //        Assertions.assertEquals("UNKNOWN INSTRUCTION", s.get_emsgs().getMsg());
 //    }

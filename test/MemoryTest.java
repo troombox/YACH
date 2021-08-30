@@ -1,3 +1,5 @@
+import chip.Memory;
+import chip.PByte;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -103,7 +105,7 @@ public class MemoryTest {
                 Assertions.assertEquals(19 - i, m.popFromStack());
             }
         } catch (Exception e){
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
