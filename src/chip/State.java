@@ -1,6 +1,7 @@
 package chip;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -161,6 +162,21 @@ public class State {
 
     public void displayTurnOffChangedFlag() {
         _display.setDisplayChangedFlag(false);
+    }
+
+    public ArrayList<Integer> stateReport() {
+        ArrayList<Integer> data = new ArrayList<>();
+        IntStream.rangeClosed(0, 0xf).forEach(x -> {
+            try {
+                data.add(_registers.readDataReg(x).intValue());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        data.add(_registers.readPCReg());
+        data.add(_registers.readIReg());
+        data.add(_currentOp.intValue());
+        return data;
     }
 
     /*----------------------------*/

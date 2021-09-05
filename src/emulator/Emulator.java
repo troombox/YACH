@@ -6,67 +6,44 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+
 public class Emulator implements Runnable {
 
-    private static boolean _flagViewOpen;
-    private static boolean _flagRunning;
-    private static boolean _flagNeedsRedraw;
+    Main _main;
 
-    private static int _clockSpeed;
+    //Data
+    State _state;
+    Image _currentFrame;
 
-    private static State _state;
-    private static Image _currentFrame;
-
-    private Viewer _cpuViewer = null;
-
-    public Emulator() {
-        _flagViewOpen = false;
-        _flagRunning = false;
-        _flagNeedsRedraw = false;
-
-        _clockSpeed = 10;
-
+    public Emulator(Main main) {
         _state = new State();
         _currentFrame = displayToFrame();
-
-    }
-
-    public static State exposeState() {
-        return _state;
-    }
-
-    public void connectClasses(Viewer cpuViewer) {
-        _cpuViewer = cpuViewer;
-        _cpuViewer.setEmulator(this);
+        _main = main;
     }
 
     @Override
     public void run() {
-        runState();
+        doStep();
+    }
+
+    private void doStep() {
+        //Do the step
+        _state.fetchOPCode();
+        _state.executeCurrentOpCode();
+        _state.checkMessages();
+        updateFrame();
+        //Do the keep-up with the GUI
+        _main.updateCurrentFrame();
+        _main.updateCPUViewer();
+
+        _state.step();
     }
 
     private void updateFrame() {
         if (_state.displayGetChangedFlag()) {
             _currentFrame = displayToFrame();
             _state.displayTurnOffChangedFlag();
-        }
-    }
-
-    private void runState() {
-        int ms = 1000 / _clockSpeed;
-        while (true) {
-            _state.fetchOPCode();
-            _state.executeCurrentOpCode();
-            _state.checkMessages();
-            updateFrame();
-            if (_cpuViewer != null)
-                _cpuViewer.setValuesToViewer();
-            _state.step();
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -83,6 +60,10 @@ public class Emulator implements Runnable {
             }
         }
         return image;
+    }
+
+    public ArrayList<Integer> stateReport() {
+        return _state.stateReport();
     }
 
 }
